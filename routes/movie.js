@@ -6,11 +6,29 @@ const Movie = require('../models/Movie');
 
 /* Get Movies */
 router.get('/', (req, res) => {
-    Movie.find({}).then((data) => {
+    // find kullanarak
+    /* Movie.find({}).then((data) => {
         res.json(data);
     }).catch((err) => {
         res.json(err);
+    }) */
+
+    // Aggregate Kullanarak
+    Movie.aggregate([
+        {
+            $lookup: {
+                from: 'directors',
+                localField: 'director_id',
+                foreignField: '_id',
+                as: 'director'
+            }
+        }
+    ]).then((data) => {
+        res.json(data);
+    }).catch((err) => {
+        res.json(err)
     })
+
 })
 
 // Get Top 5 Movies
@@ -76,11 +94,11 @@ router.put('/:movie_id', (req, res) => {
     })
 })
 
-// Remove Movie
+// Delete Movie
 router.delete('/:movie_id', (req, res) => {
     //res.send(req.params)
     const Id = req.params.movie_id;
-    Movie.findByIdAndRemove(Id, {rawResult: true}).then((movie) => {
+    Movie.findByIdAndRemove(Id).then((movie) => {
         res.json(movie)
     }).catch((err) => {
         res.json('Güncelleme yapılamadı')
