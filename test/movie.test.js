@@ -75,4 +75,44 @@ describe('/api/movies test', () => {
                 })
         })
     })
+
+    describe('/PUT/movie_id Movie', () => {
+        it('it should put(update) a movie', (done) => {
+            const movie = {
+                title:"Unusual Suspects",
+                category:"Movies & Series",
+                year:1995,
+                imdb_score:7,
+                date:"12.12.2015",
+                director_id:"5cdd7db1f3acb231acc95a56"
+            }
+            chai.request(server)
+                .put('/api/movies/'+movieId)
+                .send(movie)
+                .set('x-access-token', token)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('Object');
+                    res.body.should.have.property('title').eql(movie.title);
+                    res.body.should.have.property('category').eql(movie.category);
+                    res.body.should.have.property('year').eql(movie.year);
+                    res.body.should.have.property('imdb_score').eql(movie.imdb_score);
+                    res.body.should.have.property('director_id').eql(movie.director_id);
+                    done();
+                })
+        })
+    })
+
+    describe('/DELETE/movie_id Movie', () => {
+        it('it should put(update) a movie', (done) => {
+            chai.request(server)
+                .delete('/api/movies/'+movieId)
+                .set('x-access-token', token)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('Object');
+                    done();
+                })
+        })
+    })
 })
