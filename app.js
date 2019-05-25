@@ -14,10 +14,18 @@ var directorRouter = require('./routes/director');
 var app = express();
 
 // Database Connection
-mongoose.connect('mongodb://localhost/movie', { useNewUrlParser: true });
+mongoose.connect('mongodb://localhost/movie', { useCreateIndex: true, useNewUrlParser: true });
 mongoose.connection.on('open', () => {
   console.log('Connection is ok');
 })
+
+//Config files
+const config = require('./config');
+app.set('api_secret_key', config.api_secret_key);
+
+//Middleware
+const verifyToken = require('./middleware/verify-token');
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -33,6 +41,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Using Router
 app.use('/', indexRouter);
+app.use('/api', verifyToken);
 app.use('/api/movies', movieRouter);
 app.use('/api/directors', directorRouter);
 
